@@ -22,5 +22,8 @@ test-suite relational-algebra-test
   build-depends:       base
                      , hspec
                      , relational-algebra
+                     , bytestring
+                     , vector
+                     , cassava
   ghc-options:         -threaded -rtsopts
   default-language:    Haskell2010
