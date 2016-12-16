@@ -28,3 +28,17 @@ data Expression variable
     , Foldable
     , Traversable
     )
+
+-- `Named` used for naming objects and bringing them into scope
+data Named scope x = AS x scope
+  deriving
+    ( Read
+    , Show
+    , Eq
+    , Functor
+    , Foldable
+    , Traversable
+    )
+
+-- `As` is `Named` with type variables flipped
+type As x scope = Named scope x
