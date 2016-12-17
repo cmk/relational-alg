@@ -28,4 +28,3 @@ execute (SELECT (TABLE input)) output = do
   BL.writeFile output csvData
 
 
-
