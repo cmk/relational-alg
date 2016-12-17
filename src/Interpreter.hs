@@ -10,7 +10,7 @@ import Table
 inferType :: String -> Value
 inferType "True" = BoolValue True
 inferType "False" = BoolValue False
-inferType x | elem '.' x = RealValue (read x :: )
+inferType x | elem '.' x = RealValue ((read x) :: Double) 
 
 --etc
 
@@ -19,7 +19,7 @@ inferType x | elem '.' x = RealValue (read x :: )
 -- fmap inferType (LiteralBool True)
 
 evalExpression :: (a -> Value) -> Expression a -> Value
-evalExpression inferType exp = case exp of
+evalExpression inferType exp = undefined
   
 
 evalRelation :: Relation scope variable table -> IO (Table)

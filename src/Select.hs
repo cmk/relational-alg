@@ -6,6 +6,8 @@ module Select
 
 import Select.Relation
 import Select.Expression
+import qualified Data.ByteString.Lazy as BL
+
 
 -- Top level `Select` AST
 newtype Select scope variable table
