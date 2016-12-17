@@ -9,8 +9,7 @@ import Table
 -- fmap :: (variable -> Value) -> Expression variable -> Expression Value
 
 evalExpression :: (variable -> Value) -> Expression variable -> Value
-evalExpression = undefined
-
+evalExpression inferType exp = undefined
 
 evalRelation :: Relation scope variable table -> IO (Table)
 evalRelation = undefined
