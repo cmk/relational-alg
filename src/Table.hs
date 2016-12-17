@@ -12,9 +12,5 @@ newtype ColName = ColName Text
 type Row = [(ColName, Value)]
 type Table = [Row]
 
-inferType :: String -> Value
-inferType "True" = BoolValue True
-inferType "False" = BoolValue False
---etc
 
 --TODO: use utf8 to convert ByteString -> Text 
