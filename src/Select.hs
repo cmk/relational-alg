@@ -23,14 +23,9 @@ execute
   :: SelectIdentifier
   -> FilePath -- output
   -> IO ()
-execute (SELECT (TABLE input)) output = putStr "hi"
+execute (SELECT (TABLE input)) output = do
+  csvData <- BL.readFile input
+  BL.writeFile output csvData
 
 
--- evaluate (SumNode op left right) = 
---     let lft = evaluate left
---         rgt = evaluate right
---     in
---         case op of
---           Plus  -> lft + rgt
---           Minus -> lft - rgt
--- selectTable = SELECT (TABLE "data/people.csv")
+
