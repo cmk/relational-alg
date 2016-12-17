@@ -27,4 +27,26 @@ execute (SELECT (TABLE input)) output = do
   csvData <- BL.readFile input
   BL.writeFile output csvData
 
+type Person = (Integer, BL.ByteString, BL.ByteString, Integer, Double, BL.ByteString)
 
+personStats :: BL.ByteString -> Either String (V.Vector Person)
+personStats = decode HasHeader
+
+getVec :: IO ()
+getVec  = do
+  csvData <- BL.readFile "data/people.csv"
+  let vec = personStats csvData
+  print vec
+
+-- evaluate (SumNode op left right) = 
+--     let lft = evaluate left
+--         rgt = evaluate right
+--     in
+--         case op of
+--           Plus  -> lft + rgt
+--           Minus -> lft - rgt
+-- selectTable = SELECT (TABLE "data/people.csv")
+
+--decode NoHeader "John,27\r\nJane,28\r\n" :: Either String (V.Vector (V.Vector BL.ByteString))
+
+--execute  (SELECT (TABLE "data/people.csv")) "data/output_name.csv"
