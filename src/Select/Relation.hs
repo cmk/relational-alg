@@ -14,7 +14,6 @@ infix 1 `FROM`
 infixr 2 `UNION`
 infix 3 `INNER_JOIN_ON`
 infix 4 `WHERE`
-
  
 -- Relation abstract syntax tree
 data Relation scope variable table
