@@ -9,13 +9,16 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Select
+  exposed-modules:     Table
+                       Interpreter
+                       Select
                        Select.Relation
                        Select.Expression
   build-depends:       base >= 4.7 && < 5
                      , bytestring
                      , vector
                      , cassava
+                     , text
   default-language:    Haskell2010
 
 test-suite relational-algebra-test
@@ -25,8 +28,5 @@ test-suite relational-algebra-test
   build-depends:       base
                      , hspec
                      , relational-algebra
-                     , bytestring
-                     , vector
-                     , cassava
   ghc-options:         -threaded -rtsopts
   default-language:    Haskell2010

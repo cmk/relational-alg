@@ -7,14 +7,14 @@ import Data.Text
 
 data Value = BoolValue Bool | IntValue Int | RealValue Double | StringValue Text
 
-newtype Name = Name Text
+newtype ColName = ColName Text
 
-type Row = [(Name, Value)]
+type Row = [(ColName, Value)]
 type Table = [Row]
 
 inferType :: String -> Value
-inferType "True" = True
-inferType "False" = False
+inferType "True" = BoolValue True
+inferType "False" = BoolValue False
 --etc
 
 --TODO: use utf8 to convert ByteString -> Text 

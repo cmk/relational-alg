@@ -12,7 +12,7 @@ evalExpression :: (variable -> Value) -> Expression variable -> Value
 evalExpression = undefined
 
 
-evalRelation :: Relation -> IO (Table)
+evalRelation :: Relation scope variable table -> IO (Table)
 evalRelation = undefined
 
 
