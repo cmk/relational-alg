@@ -1,26 +1,14 @@
 module Interpreter where
 
-import Data.Text
+import Control.Monad.Reader
 
 import Select.Expression
 import Select.Relation
 import Table
 
 
-inferType :: String -> Value
-inferType "True" = BoolValue True
-inferType "False" = BoolValue False
-inferType x | elem '.' x = RealValue ((read x) :: Double) 
-
---etc
-
--- instance Functor Expression
--- fmap :: (variable -> Value) -> Expression variable -> Expression Value
--- fmap inferType (LiteralBool True)
-
-evalExpression :: (a -> Value) -> Expression a -> Value
-evalExpression inferType exp = undefined
-  
+evalExpression :: Expression variable -> Reader Row (Maybe ColName, Value)
+evalExpression = undefined
 
 evalRelation :: Relation scope variable table -> IO (Table)
 evalRelation = undefined

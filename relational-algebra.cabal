@@ -19,6 +19,7 @@ library
                      , vector
                      , cassava
                      , text
+                     , mtl
   default-language:    Haskell2010
 
 test-suite relational-algebra-test

@@ -5,7 +5,6 @@ import Select.Expression
 import Select.Relation
 import System.IO
 import Test.Hspec
-import Table
 
    
 main :: IO ()
@@ -30,9 +29,8 @@ selectTable = SELECT (TABLE "data/people.csv")
 
 selectName :: SelectIdentifier
 selectName =
-  SELECT $ [Column "first_name" `AS` "name"]
-    `FROM` TABLE "data/people.csv" `WHERE` (Column "age" `Gte` LiteralInt 40)
-
+  SELECT $ [Column "first_name" `AS` "name"] `FROM` TABLE "data/people.csv" `WHERE` (Column "age" `Gte` LiteralInt 40)
+  
 selectJoin :: SelectIdentifier
 selectJoin = SELECT $
   [ Column "orders.order_id" `AS` "order_id"

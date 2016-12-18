@@ -14,20 +14,6 @@ data ColName = ColName String deriving Show
 type Row = [(ColName, Value)]
 type Table = [Row]
 
-
---TODO: use utf8 to convert ByteString -> Text 
-
-type Person = (Integer, BL.ByteString, BL.ByteString, Integer, Double, BL.ByteString)
-
-personStats :: BL.ByteString -> Either String (V.Vector Person)
-personStats = decode HasHeader
-
-getVec :: IO ()
-getVec  = do
-  csvData <- BL.readFile "data/people.csv"
-  let vec = personStats csvData
-  print vec
-
 orderId :: ColName
 orderId = ColName "order_id"
 
