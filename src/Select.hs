@@ -6,7 +6,6 @@ module Select
 
 import Select.Relation
 import Select.Expression
-import qualified Data.ByteString.Lazy as BL
 
 
 -- Top level `Select` AST
@@ -22,7 +21,5 @@ execute
   :: SelectIdentifier
   -> FilePath -- output
   -> IO ()
-execute (SELECT (TABLE input)) output = do
-  csvData <- BL.readFile input
-  BL.writeFile output csvData
+execute = undefined
 

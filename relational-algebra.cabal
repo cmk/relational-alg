@@ -20,6 +20,8 @@ library
                      , cassava
                      , text
                      , mtl
+                     , containers
+                     , transformers
   default-language:    Haskell2010
 
 test-suite relational-algebra-test
