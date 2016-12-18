@@ -14,19 +14,6 @@ type SymTab = M.Map String Value
 type Evaluator a = MaybeT (State SymTab) a
 
 
-lookUp :: String -> Evaluator Value
-lookUp str = do
-    symTab <- get
-    case M.lookup str symTab of
-      Just v  -> return v
-      Nothing -> error $ "Undefined variable " ++ str
-
-addSymbol :: String -> Value -> Evaluator ()
-addSymbol str val = do 
-    symTab <- get
-    put $ M.insert str val symTab
-    return ()
-
 checkNum :: (Value,Value) -> Bool
 checkNum e = 
   case e of
@@ -51,7 +38,8 @@ evaluateE :: Expression a -> Evaluator Value
 evaluateE (LiteralInt x) = return $ IntValue x
 evaluateE (LiteralReal x) = return $ RealValue x
 
-      
+evaluateE (Column x) = undefined
+
 evaluateE (Add left right) = do
     lft <- evaluateE left
     rgt <- evaluateE right
