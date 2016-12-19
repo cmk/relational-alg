@@ -1,3 +1,4 @@
+{-# LANGUAGE NoMonomorphismRestriction #-}
 module Interpreter where
 
 import Data.Char
@@ -38,11 +39,11 @@ evaluateE :: Expression a -> Evaluator Value
 evaluateE (LiteralInt x) = return $ IntValue x
 evaluateE (LiteralReal x) = return $ RealValue x
 
-evaluateE (Column x) =  do
-    symTab <- get
-    guard $ M.member x symTab
-    case M.lookup str symTab of
-      Just v -> return $ IntValue v
+-- evaluateE (Column x) =  do
+--     symTab <- get
+--     guard $ M.member x symTab
+--     case M.lookup x symTab of
+--       Just v -> return v
 
 evaluateE (Add left right) = do
     lft <- evaluateE left
