@@ -8,6 +8,19 @@ import Select.Expression
 import Select.Relation
 import Table
 
+
+evaluateR :: RelationIdentifier -> IO (Table)
+evaluateR (TABLE filepath) = readTable filepath
+evaluateR (projection `FROM` relation) = undefined
+evaluateR (relation `WHERE` condition) = do
+  tab <- evaluateR relation
+  let e = evaluateE condition
+  return $ whereOp (\row -> getBool $ evalState e (M.fromList row)) tab
+evaluateR (INNER_JOIN_ON rel1 rel2 cond) = undefined
+
+
+---
+
 type SymTab = M.Map String Value
 type Evaluator a = State SymTab a
 
@@ -124,17 +137,3 @@ evaluateE (Mod left right) = do
     (IntValue l, IntValue r) -> return $ IntValue (l `mod` r)
     _ -> error $ "Types not supported by Mod"
 
-
----
-
-getBool :: Value -> Bool
-getBool = undefined
-
-evaluateR :: RelationIdentifier -> IO (Table)
-evaluateR (TABLE fpath) = undefined
-evaluateR (projection `FROM` relation) = undefined
-evaluateR (relation `WHERE` condition) = do
-  tab <- evaluateR relation
-  let e = evaluateE condition
-  return $ whereOp (\row -> getBool $ evalState e (M.fromList row)) tab
-evaluateR (INNER_JOIN_ON rel1 rel2 cond) = undefined

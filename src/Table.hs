@@ -11,6 +11,19 @@ import qualified Data.ByteString.Lazy as BL
 
 data Value = BoolValue Bool | IntValue Int | RealValue Double | StringValue String deriving (Read,Show,Eq,Ord)
 
+
+getInt :: Value -> Int
+getInt (IntValue i) = i
+
+getBool :: Value -> Bool
+getBool (BoolValue b) = b
+
+getReal :: Value -> Double
+getReal (RealValue r) = r
+
+getString :: Value -> String
+getString (StringValue s) = s
+
 type Row = [(String, Value)]
 type Table = [Row]
 
@@ -28,8 +41,11 @@ orders = [
   ,[("orderId", IntValue 10310), ("customerId", IntValue 3)]
   ,[("orderId", IntValue 10311), ("customerId", IntValue 2)]]
         
-parseTable :: FilePath -> IO (Table)
-parseTable = undefined
+readTable :: FilePath -> IO (Table)
+readTable filepath = return customers
+
+writeTable :: filepath -> table -> IO ()
+writeTable = undefined
 
 ---
 

@@ -6,7 +6,8 @@ module Select
 
 import Select.Relation
 import Select.Expression
-
+import Interpreter
+import Table
 
 -- Top level `Select` AST
 newtype Select scope variable table
@@ -18,5 +19,7 @@ type SelectIdentifier = Select String String FilePath
 
 -- Toy CSV backend. This executes the select statement to create a new CSV file
 execute :: SelectIdentifier -> FilePath -> IO ()
-execute = undefined
+execute (SELECT rel) filepath = do
+  table <- evaluateR rel
+  writeTable filepath table
 
