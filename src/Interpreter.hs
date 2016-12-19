@@ -1,8 +1,8 @@
 module Interpreter where
 
-import Data.Char
-import qualified Data.Map as M
 import Control.Monad.State
+import Data.Typeable
+import qualified Data.Map as M
 
 import Select.Expression
 import Select.Relation
@@ -12,7 +12,7 @@ type SymTab = M.Map String Value
 type Evaluator a = State SymTab a
 
 
-evaluateE :: Show a =>  Expression a -> Evaluator Value
+evaluateE :: Typeable a =>  Expression a -> Evaluator Value
 
 evaluateE (LiteralBool x) = return $ BoolValue x
 evaluateE (LiteralString x) = return $ StringValue x
@@ -21,9 +21,14 @@ evaluateE (LiteralReal x) = return $ RealValue x
 
 evaluateE (Column str) = do
   symTab <- get
-  case M.lookup (show str) symTab of
-    Just v -> return v
-    Nothing -> error $ "Undefined variable"
+  let val =
+        do
+          s <- (cast str) :: Maybe String
+          v <- M.lookup s symTab
+          return v
+  case val of
+    Just v  -> return v
+    Nothing -> error $ "Type error / Undefined variable"
 
 evaluateE (Neg exp) = do
   ex <- evaluateE exp
@@ -43,14 +48,14 @@ evaluateE (And left right) = do
   rgt <- evaluateE right
   case (lft,rgt) of
     (BoolValue l, BoolValue r) -> return $ BoolValue (l && r)
-    _ -> error $ "Types not supported by Add"
+    _ -> error $ "Types not supported by And"
 
 evaluateE (Or left right) = do
   lft <- evaluateE left
   rgt <- evaluateE right
   case (lft,rgt) of
     (BoolValue l, BoolValue r) -> return $ BoolValue (l || r)
-    _ -> error $ "Types not supported by Add"
+    _ -> error $ "Types not supported by Or"
     
 evaluateE (Equ left right) = do
   lft <- evaluateE left

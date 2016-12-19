@@ -17,9 +17,6 @@ newtype Select scope variable table
 type SelectIdentifier = Select String String FilePath
 
 -- Toy CSV backend. This executes the select statement to create a new CSV file
-execute
-  :: SelectIdentifier
-  -> FilePath -- output
-  -> IO ()
+execute :: SelectIdentifier -> FilePath -> IO ()
 execute = undefined
 
