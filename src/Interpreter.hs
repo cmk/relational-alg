@@ -1,6 +1,6 @@
 module Interpreter where
 
-import Control.Monad.State
+import Control.Monad.State.Lazy
 import Data.Typeable
 import qualified Data.Map as M
 
@@ -10,7 +10,6 @@ import Table
 
 type SymTab = M.Map String Value
 type Evaluator a = State SymTab a
-
 
 evaluateE :: Typeable a =>  Expression a -> Evaluator Value
 
@@ -125,13 +124,17 @@ evaluateE (Mod left right) = do
     (IntValue l, IntValue r) -> return $ IntValue (l `mod` r)
     _ -> error $ "Types not supported by Mod"
 
+
 ---
 
-evaluateR :: Relation scope variable table -> IO (Table)
-evaluateR = undefined
+getBool :: Value -> Bool
+getBool = undefined
 
-
-
-
-
-
+evaluateR :: RelationIdentifier -> IO (Table)
+evaluateR (TABLE fpath) = undefined
+evaluateR (projection `FROM` relation) = undefined
+evaluateR (relation `WHERE` condition) = do
+  tab <- evaluateR relation
+  let e = evaluateE condition
+  return $ whereOp (\row -> getBool $ evalState e (M.fromList row)) tab
+evaluateR (INNER_JOIN_ON rel1 rel2 cond) = undefined
