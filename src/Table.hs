@@ -1,6 +1,6 @@
 module Table where
 
-data Value = BoolValue Bool | IntValue Int | RealValue Double | StringValue String deriving Show
+data Value = BoolValue Bool | IntValue Int | RealValue Double | StringValue String deriving (Read,Show,Eq,Ord)
 
 type Row = [(String, Value)]
 type Table = [Row]
