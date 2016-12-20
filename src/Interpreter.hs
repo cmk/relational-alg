@@ -12,31 +12,30 @@ import Table
 
 ---
 
-                      
-evaluateR :: RelationIdentifier -> IO (Table)
+evaluateR :: RelationIdentifier -> IO Table
 
-evaluateR (TABLE filepath) = readTable filepath
+evaluateR (TABLE filepath) = fromFile filepath
 
 evaluateR (projection `FROM` relation) = do
   tab <- evaluateR relation
   let evalCell row (scope, state) = (scope, evalState state (M.fromList row))
   let opList = map (\(AS x scope) -> (scope,evaluateE x)) projection
   let evalRow opList row = map (evalCell row) opList
-  return $ map (evalRow opList) tab                
+  return . toTable . map (evalRow opList) . fromTable $ tab
 
 evaluateR (relation `WHERE` condition) = do
   tab <- evaluateR relation
   let cond = evaluateE condition
   let whereOp predicate table = table >>= (\row -> if predicate row then [row] else [])
-  return $ whereOp (\row -> getBool $ evalState cond (M.fromList row)) tab
+  let modifyRow = whereOp (\row -> getBool $ evalState cond (M.fromList row))
+  return . toTable . modifyRow . fromTable $ tab
 
 evaluateR (rel1 `UNION` rel2) = do
   tab1 <- evaluateR rel1
   tab2 <- evaluateR rel2
-  return $ nub (tab1 ++ tab2)
-  
-evaluateR (INNER_JOIN_ON rel1 rel2 cond) = undefined
+  return . toTable $ nub (fromTable tab1 ++ fromTable tab2)
 
+evaluateR (INNER_JOIN_ON rel1 rel2 cond) = undefined
 
 ---
 

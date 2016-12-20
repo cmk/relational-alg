@@ -21,5 +21,4 @@ type SelectIdentifier = Select String String FilePath
 execute :: SelectIdentifier -> FilePath -> IO ()
 execute (SELECT rel) filepath = do
   table <- evaluateR rel
-  writeTable filepath table
-
+  toFile filepath table
