@@ -1,21 +1,40 @@
 module Interpreter where
 
+import Control.Monad
 import Control.Monad.State.Lazy
 import Data.Typeable
+import Data.List (nub)
 import qualified Data.Map as M
 
 import Select.Expression
 import Select.Relation
 import Table
 
+---
 
+                      
 evaluateR :: RelationIdentifier -> IO (Table)
+
 evaluateR (TABLE filepath) = readTable filepath
-evaluateR (projection `FROM` relation) = undefined
+
+evaluateR (projection `FROM` relation) = do
+  tab <- evaluateR relation
+  let evalCell row (scope, state) = (scope, evalState state (M.fromList row))
+  let opList = map (\(AS x scope) -> (scope,evaluateE x)) projection
+  let evalRow opList row = map (evalCell row) opList
+  return $ map (evalRow opList) tab                
+
 evaluateR (relation `WHERE` condition) = do
   tab <- evaluateR relation
-  let e = evaluateE condition
-  return $ whereOp (\row -> getBool $ evalState e (M.fromList row)) tab
+  let cond = evaluateE condition
+  let whereOp predicate table = table >>= (\row -> if predicate row then [row] else [])
+  return $ whereOp (\row -> getBool $ evalState cond (M.fromList row)) tab
+
+evaluateR (rel1 `UNION` rel2) = do
+  tab1 <- evaluateR rel1
+  tab2 <- evaluateR rel2
+  return $ nub (tab1 ++ tab2)
+  
 evaluateR (INNER_JOIN_ON rel1 rel2 cond) = undefined
 
 
