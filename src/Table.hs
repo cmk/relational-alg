@@ -1,13 +1,30 @@
 module Table where
 
 import System.IO
-import Data.Csv
 import qualified Data.ByteString.Lazy as BL
+import Text.CSV
+import qualified Data.CSV.Table as T
+import Data.CSV.Table hiding (Table)
+import Text.Read (readMaybe)
+import Data.List (nub, intersperse)
 
+newtype Table = Table { unTable :: T.Table }
 
+instance Show Table where
+  show (Table (T _ cls bdy)) =
+    let csv = [c | C c <- cls] : [xs | R xs <- bdy]
+        printCSV records = unlines (printRecord `map` records)
+          where printRecord = concat . intersperse "," . map printField
+                printField f = f
+                unlines = concat . intersperse "\n"
+    in printCSV csv
 
-data Value = BoolValue Bool | IntValue Int | RealValue Double | StringValue String deriving (Read,Show,Eq,Ord)
-
+data Value
+  = BoolValue Bool
+  | IntValue Int
+  | RealValue Double
+  | StringValue String
+  deriving (Read, Show, Eq, Ord)
 
 getInt :: Value -> Int
 getInt (IntValue i) = i
@@ -21,26 +38,48 @@ getReal (RealValue r) = r
 getString :: Value -> String
 getString (StringValue s) = s
 
-type Row = [(String, Value)]
-type Table = [Row]
+readValue :: String -> Value
+readValue str = let
+  value = boolValue
+  boolValue = case readMaybe str of
+    Nothing -> intValue
+    Just b -> BoolValue b
+  intValue = case readMaybe str of
+    Nothing -> realValue
+    Just i -> IntValue i
+  realValue = case readMaybe str of
+    Nothing -> StringValue str
+    Just d -> RealValue d
+  in value
 
--- temporary convenience tables for testing until parseTable is implemented.
-customers :: Table
-customers = [
-   [("customerId", IntValue 1), ("customerName", StringValue "Alfred")]
-  ,[("customerId", IntValue 2), ("customerName", StringValue "Ana")]
-  ,[("customerId", IntValue 3), ("customerName", StringValue "Antonio")]]
+unwrapValue :: Value -> String
+unwrapValue val = case val of
+  BoolValue b -> show b
+  IntValue i -> show i
+  RealValue r -> show r
+  StringValue s -> s -- printCSV [[s]] -- properly handle escape sequences
 
-orders :: Table
-orders = [
-   [("orderId", IntValue 10308), ("customerId", IntValue 2)]
-  ,[("orderId", IntValue 10309), ("customerId", IntValue 1)]
-  ,[("orderId", IntValue 10310), ("customerId", IntValue 3)]
-  ,[("orderId", IntValue 10311), ("customerId", IntValue 2)]]
-        
-readTable :: FilePath -> IO (Table)
-readTable filepath = return customers
+fromTable :: Table -> [[(String, Value)]]
+fromTable (Table (T _ cols body)) =
+  let columns = map (\(C x) -> x) cols
+      rawRows = map (\(R x) -> x) body
+      readRow = map readValue
+      rows = map readRow rawRows
+  in map (zip columns) rows
 
-writeTable :: filepath -> table -> IO ()
-writeTable = undefined
+toTable :: [[(String, Value)]] -> Table
+toTable rowList = Table (T dim' cols' body')
+  where allTags = map (map fst) rowList
+        cols' = case nub allTags of
+          [tags] -> map C tags
+          _ -> error "The Impossible Happened: Mismatching column names for different rows"
+        dim' = length cols'
+        allVals = map (map snd) rowList
+        allRows = map (map unwrapValue) allVals
+        body' = map R allRows
 
+fromFile :: FilePath -> IO Table
+fromFile f = Table <$> T.fromFile f
+
+toFile :: FilePath -> Table -> IO ()
+toFile f = writeFile f . show
