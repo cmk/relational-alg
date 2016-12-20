@@ -91,31 +91,37 @@ evaluateE (Or left right) = do
 evaluateE (Equ left right) = do
   lft <- evaluateE left
   rgt <- evaluateE right
+  --TODO check that types match
   return $ BoolValue (lft == rgt)
 
 evaluateE (Neq left right) = do
   lft <- evaluateE left
   rgt <- evaluateE right
+  --TODO check that types match
   return $ BoolValue (lft /= rgt)
   
 evaluateE (Gt left right) = do
   lft <- evaluateE left
   rgt <- evaluateE right
+  --TODO check that types match
   return $ BoolValue (lft > rgt)
   
 evaluateE (Gte left right) = do
   lft <- evaluateE left
   rgt <- evaluateE right
+  --TODO check that types match
   return $ BoolValue (lft >= rgt)
 
 evaluateE (Lt left right) = do
   lft <- evaluateE left
   rgt <- evaluateE right
+  --TODO check that types match
   return $ BoolValue (lft < rgt)
 
 evaluateE (Lte left right) = do
   lft <- evaluateE left
   rgt <- evaluateE right
+  --TODO check that types match
   return $ BoolValue (lft <= rgt)
   
 evaluateE (Add left right) = do
