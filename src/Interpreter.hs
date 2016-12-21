@@ -10,10 +10,20 @@ import Select.Expression
 import Select.Relation
 import Table
 
----
 
+
+filterRow :: Expression (String,String) -> Row -> Row -> Bool
+filterRow = undefined --TODO implement
+
+combine :: [(Row,Row)] -> Table
+combine = undefined --TODO implement
+
+innerJoin :: Table -> Table -> Expression (String,String) -> Table
+innerJoin l r cond = combine $ filter (uncurry $ filterRow cond ) (liftM2 (,) l r)
+
+---
                       
-evaluateR :: RelationIdentifier -> IO (Table)
+evaluateR :: RelationIdentifier -> IO Table
 
 evaluateR (TABLE filepath) = readTable filepath
 
@@ -35,7 +45,11 @@ evaluateR (rel1 `UNION` rel2) = do
   tab2 <- evaluateR rel2
   return $ nub (tab1 ++ tab2)
   
-evaluateR (INNER_JOIN_ON rel1 rel2 cond) = undefined
+evaluateR (INNER_JOIN_ON rel1 rel2 cond) = do
+  let foo (rel `AS` name) = rel --TODO fix this. should run (evaluateR rel) then update col names
+  tab1 <- evaluateR $ foo rel1
+  tab2 <- evaluateR $ foo rel2
+  return $ innerJoin tab1 tab2 cond
 
 
 ---

@@ -24,7 +24,6 @@ getString (StringValue s) = s
 type Row = [(String, Value)]
 type Table = [Row]
 
--- temporary convenience tables for testing until parseTable is implemented.
 customers :: Table
 customers = [
    [("customerId", IntValue 1), ("customerName", StringValue "Alfred")]
