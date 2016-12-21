@@ -12,17 +12,6 @@ import Table
 
 
 
-filterRow :: Expression (String,String) -> Row -> Row -> Bool
-filterRow = undefined --TODO implement
-
-combine :: [(Row,Row)] -> Table
-combine = undefined --TODO implement
-
-innerJoin :: Table -> Table -> Expression (String,String) -> Table
-innerJoin l r cond = combine $ filter (uncurry $ filterRow cond ) (liftM2 (,) l r)
-
----
-                      
 evaluateR :: RelationIdentifier -> IO Table
 
 evaluateR (TABLE filepath) = readTable filepath
@@ -40,17 +29,33 @@ evaluateR (relation `WHERE` condition) = do
   let whereOp predicate table = table >>= (\row -> if predicate row then [row] else [])
   return $ whereOp (\row -> getBool $ evalState cond (M.fromList row)) tab
 
-evaluateR (rel1 `UNION` rel2) = do
+evaluateR (rel1 `UNION` rel2) = do --TODO write test
   tab1 <- evaluateR rel1
   tab2 <- evaluateR rel2
   return $ nub (tab1 ++ tab2)
-  
-evaluateR (INNER_JOIN_ON rel1 rel2 cond) = do
-  let foo (rel `AS` name) = rel --TODO fix this. should run (evaluateR rel) then update col names
-  tab1 <- evaluateR $ foo rel1
-  tab2 <- evaluateR $ foo rel2
-  return $ innerJoin tab1 tab2 cond
 
+evaluateR (INNER_JOIN_ON rel1 rel2 expr) = do
+  tab1 <- evaluateRQ rel1
+  tab2 <- evaluateRQ rel2
+  let tab = liftM2 (++) tab1 tab2
+  let cond = evaluateE $ mapEQ expr
+  let whereOp predicate table = table >>= (\row -> if predicate row then [row] else [])
+  return $ whereOp (\row -> getBool $ evalState cond (M.fromList row)) tab
+
+
+--supports only equi-joins for now
+mapEQ :: Expression (String,String) -> Expression String
+mapEQ (Equ left right) = (mapEQ left) `Equ` (mapEQ right)
+mapEQ (Column (a,b)) = (Column (a++"."++b))
+
+updateScope :: String -> Table -> Table
+updateScope scope = (fmap . fmap) (\(name, val) -> (scope ++ "." ++ name, val))
+  
+evaluateRQ :: Named String RelationIdentifier -> IO Table
+evaluateRQ ((TABLE filepath) `AS` name) = do
+  tab1 <- readTable filepath
+  let tab2 = updateScope name tab1
+  return tab2
 
 ---
 
